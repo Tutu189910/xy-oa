@@ -1,22 +1,52 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 Vue.use(VueRouter)
-
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    redirect: '/main/index/technical'
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/main',
+    name: 'main',
+    component: () => import(/* webpackChunkName: "main" */ '@/views/main/main.vue'),
+    children: [
+      {
+        path: 'index/technical',
+        component: () => import('@/views/main/cpns/content/index/technical.vue')
+      },
+      {
+        path: 'index/data',
+        component: () => import('@/views/main/cpns/content/index/data.vue')
+      },
+      {
+        path: 'orderForm',
+        component: () => import('@/views/main/cpns/content/orderForm/orderForm.vue')
+      },
+      {
+        path: 'vipForm',
+        component: () => import('@/views/main/cpns/content/vipForm/vipForm.vue')
+      },
+      {
+        path: 'account',
+        component: () => import('@/views/main/cpns/content/account/account.vue')
+      },
+      {
+        path: 'setting',
+        component: () => import('@/views/main/cpns/content/setting/setting.vue')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import(/* webpackChunkName: "login" */ '@/views/login/login.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notFound',
+    component: () => import('@/views/not-found/not-found.vue')
   }
 ]
 
@@ -26,4 +56,14 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path !== '/login' && !window.localStorage.getItem('token')) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+})
+
 export default router
+
+
