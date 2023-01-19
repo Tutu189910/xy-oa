@@ -34,7 +34,18 @@ const routes = [
       },
       {
         path: 'setting',
-        component: () => import('@/views/main/cpns/content/setting/setting.vue')
+        component: () => import('@/views/main/cpns/content/setting/setting.vue'),
+        redirect: '/main/setting/baseSet',
+        children: [
+          {
+            path: 'baseSet',
+            component: () => import('@/views/main/cpns/content/setting/main/baseSet.vue'),
+          },
+          {
+            path: 'pasSet',
+            component: () => import('@/views/main/cpns/content/setting/main/pasSet.vue'),
+          },
+        ]
       }
     ]
   },

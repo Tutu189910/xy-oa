@@ -21,5 +21,13 @@ function getOrderInfo() {
     isLoading: false
   })
 }
+function deleteOrder(data) {
+  console.log(data);
+  return yAxios.post({
+    url: apiURL.delete,
+    data: data,
+    isLoading: false
+  })
+}
 
-export { queryOrder, getOrderInfo }
+export { queryOrder, getOrderInfo, deleteOrder }

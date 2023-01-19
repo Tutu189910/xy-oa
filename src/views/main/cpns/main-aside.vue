@@ -61,7 +61,7 @@ export default {
     currentItme() {
       const { itemId } = isPath(
         this.$store.state.login.uesrMenu,
-        this.$route.path
+        this.$route.path.split('/').slice(0, 3).join('/')
       )
       return itemId
     }

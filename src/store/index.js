@@ -24,4 +24,5 @@ export default store
 
 export function setupStore() {
   store.dispatch('login/setupStore')
+  store.dispatch('order/setupStore')
 }

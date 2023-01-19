@@ -35,10 +35,10 @@ export default {
   },
   computed: {
     userName() {
-      return this.$store.state.login.uesrInfo.username
+      return this.$store.state.login.uesrInfo.nickname
     },
     userAvatar() {
-      return this.userName.slice(0, 1)
+      return this.userName[0]
     },
     pathTitle() {
       const { itemTitle } = isPath(
@@ -89,6 +89,7 @@ export default {
     }
   }
   .myAccount {
+    margin-right: 20px;
     .el-dropdown-link {
       display: flex;
       align-items: center;

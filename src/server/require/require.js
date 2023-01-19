@@ -29,10 +29,8 @@ class yRequire {
     )
     this.instance.interceptors.response.use(
       (res) => {
-        if (this.isLoading) {
-          setTimeout(() => {
-            this.loading.close()
-          }, 6000);
+        if (this.isLoading && this.loading) {
+          this.loading.close()
         }
         return res
       },
