@@ -30,17 +30,28 @@ export default {
   },
   actions: {
     async yLogin({ commit, state }, payload) {
-      const { token } = await login(payload)
-      if (token) {
-        setLocal('token', token)
-        commit('changeToken', token)
+      const res = await login(payload)
+
+      console.log(res);
+      if (res.token) {
+        setLocal('token', res.token)
+        commit('changeToken', res.token)
         const { data } = await getUesrInfo()
         commit('changeUesrInfo', data)
         commit('changeUesrMenu', getMenu(state.uesrInfo.level))
+
+        // for (let t = 0; t < userMenus.length; t++) {
+        //   console.log(userMenus);
+        //   router.addRoute('main', userMenus[t])
+        // }
+
         // 动态注册路由  ###（有问题）
+        // router.reloadRouter()
         // getRouters(state.uesrInfo.level).forEach(item => {
         //   router.addRoute('main', item)
         // });
+        console.log(router);
+
         router.push('/')
         Message({
           type: 'success',

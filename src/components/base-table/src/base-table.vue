@@ -1,28 +1,32 @@
 <template>
   <div class="base-table">
     <el-table
-      :data="tableData.result"
+      :data="tableData"
       style="width: 100%"
       v-bind="tableConfig.tabelStyle"
     >
       <el-table-column
-        :label="item.title"
-        :min-width="item.width"
-        v-for="(item, key) in tableConfig.propList"
-        :key="key"
+        v-if="tableConfig.isIndex"
+        type="index"
+        width="50"
         align="center"
       >
-        <template slot-scope="scope">
-          <i
-            :class="item.iClass"
-            style="margin-right: 4px"
-            v-if="item.iClass"
-          ></i>
-          <el-tag type="success" v-if="item.isTab">{{ scope.row[key] }}</el-tag>
-          <span v-else>{{ scope.row[key] }}</span>
+      </el-table-column>
+      <el-table-column
+        :label="item.title"
+        :min-width="item.width"
+        v-for="item in tableConfig.propList"
+        :key="item.prop"
+        align="center"
+      >
+        <template #default="scope">
+          <slot :name="item.slotName" :row="scope.row">
+            {{ scope.row[item.prop] }}
+          </slot>
         </template>
       </el-table-column>
       <slot name="handle"></slot>
+      <slot name="foot"></slot>
     </el-table>
   </div>
 </template>
@@ -31,11 +35,11 @@
 export default {
   props: {
     tableConfig: {
-      type: Object,
+      type: [Object, Array],
       require: true
     },
     tableData: {
-      type: Object,
+      type: [Object, Array],
       require: true
     }
   },

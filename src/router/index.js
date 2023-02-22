@@ -67,13 +67,23 @@ const router = new VueRouter({
   routes
 })
 
+router.reloadRouter = function () {
+  router.matcher = new VueRouter({
+    mode: "history",
+    routes
+  }).matcher
+}
+
 router.beforeEach((to, from, next) => {
   if (to.path !== '/login' && !window.localStorage.getItem('token')) {
+
     next({ name: 'login' })
   } else {
     next()
   }
 })
+
+
 
 export default router
 

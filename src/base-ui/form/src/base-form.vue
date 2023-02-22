@@ -1,7 +1,11 @@
 <template>
   <div class="base-form">
     <div class="form-body">
-      <el-form ref="form" :model="formDatasCopy" label-width="90px">
+      <el-form
+        ref="form"
+        :model="formDatas"
+        :label-width="formConfig.labelWidth ?? '90px'"
+      >
         <el-row :gutter="10">
           <el-col
             v-bind="item.span ?? formConfig.colLayout"
@@ -11,23 +15,41 @@
             <template v-if="item.type === 'input'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-input
-                  :type="item.type"
-                  v-model.trim="formDatasCopy[`${item.field}`]"
+                  :type="item.type && item.isNum ? 'number' : item.type"
+                  v-model.lazy="formDatas[`${item.field}`]"
                   size="small"
-                  @blur="handelChange"
-                ></el-input>
+                  :max="item.max"
+                  :min="item.min"
+                  @keyup.enter.native="keyUpFun"
+                >
+                  <template slot="append" v-if="item.endText">{{
+                    item.endText
+                  }}</template></el-input
+                >
               </el-form-item>
             </template>
+            <template v-if="item.type === 'swicth'">
+              <el-form-item :label="item.label" :label-width="item.labelWidth">
+                <el-switch
+                  v-model="formDatas[`${item.field}`]"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  :active-value="1"
+                  :inactive-value="0"
+                >
+                </el-switch>
+              </el-form-item>
+            </template>
+
             <template v-else-if="item.type === 'daterange'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-date-picker
-                  v-model="formDatasCopy[`${item.field}`]"
+                  v-model.lazy="formDatas[`${item.field}`]"
                   :type="item.type"
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   size="small"
-                  @blur="handelChange"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -35,17 +57,16 @@
             <template v-else-if="item.type === 'select'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-select
-                  v-model="formDatasCopy[`${item.field}`]"
+                  v-model.lazy="formDatas[`${item.field}`]"
                   placeholder="请选择"
                   size="small"
-                  @blur="handelChange"
                   :type="item.type"
                 >
                   <el-option
                     v-for="(value, key) in item.value"
-                    :key="value"
-                    :label="value"
-                    :value="key"
+                    :key="key"
+                    :label="value.label ?? key"
+                    :value="value"
                   >
                   </el-option>
                 </el-select>
@@ -54,12 +75,6 @@
           </el-col>
         </el-row>
       </el-form>
-      <div>
-        <slot name="query"></slot>
-      </div>
-      <div>
-        <slot name="add"></slot>
-      </div>
     </div>
   </div>
 </template>
@@ -68,14 +83,14 @@
 export default {
   model: {
     prop: 'formDatas',
-    event: 'qury'
+    event: ['change', 'query']
   },
   props: {
     formConfig: {
       type: Object,
       require: true
     },
-    formDatas: {
+    baseDatas: {
       type: Object,
       require: true
     }
@@ -83,17 +98,39 @@ export default {
   computed: {},
   data() {
     return {
-      formDatasCopy: {}
+      // formDatasCopy: {}
+      formDatas: {}
+    }
+  },
+  watch: {
+    formDatas: {
+      handler(newData) {
+        this.$emit('change', newData)
+      },
+      deep: true
+    },
+    baseDatas: {
+      handler(newData) {
+        this.formDatas = newData
+      },
+      deep: true
     }
   },
   methods: {
-    handelChange() {
-      this.$emit('query', this.formDatasCopy)
+    keyUpFun() {
+      this.$emit('query', this.formDatas)
+    },
+    clear() {
+      this.formDatas = {}
     }
+    // log() {
+    //   return [this.formDatasCopy, this.formDatas]
+    // }
   },
   created() {
     // console.log(this.formDatas)
-    this.formDatasCopy = JSON.parse(JSON.stringify(this.formDatas))
+    // this.formDatasCopy = JSON.parse(JSON.stringify(this.formDatas))
+    this.formDatas = JSON.parse(JSON.stringify(this.baseDatas))
   }
 }
 </script>
@@ -111,6 +148,9 @@ export default {
     flex: 1;
     .el-row {
       padding: 0;
+      /deep/.el-date-editor--daterange {
+        width: 100%;
+      }
       .el-form-item {
         margin-bottom: 0;
         margin: 8px 0;

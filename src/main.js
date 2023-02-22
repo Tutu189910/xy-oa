@@ -4,6 +4,8 @@ import router from './router'
 import store, { setupStore } from './store'
 
 import '@/assets/css/index.less'
+import animated from 'animate.css'
+
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -13,6 +15,7 @@ import '@/assets/css/element-loading.less'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(VueParticles)
+Vue.use(animated)
 setupStore()
 
 new Vue({

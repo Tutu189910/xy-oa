@@ -3,8 +3,11 @@
     <div class="breadcrumb">
       <i class="el-icon-s-fold" v-if="isCollapse" @click="closeAside"></i>
       <i class="el-icon-s-unfold" v-else @click="openAside"></i>
+
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>{{ pathTitle }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-for="item in pathTitle" :key="item">
+          {{ item }}
+        </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="myAccount">
@@ -45,7 +48,8 @@ export default {
         this.$store.state.login.uesrMenu,
         this.$route.path
       )
-      return itemTitle
+      let titleArr = itemTitle.split('/')
+      return titleArr
     }
   },
   methods: {
@@ -59,15 +63,13 @@ export default {
     openAside() {
       this.isCollapse = !this.isCollapse
       this.$emit('openNav', {
-        isCollapse: this.isCollapse,
-        navWidth: '200px'
+        isCollapse: this.isCollapse
       })
     },
     closeAside() {
       this.isCollapse = !this.isCollapse
       this.$emit('closeNav', {
-        isCollapse: this.isCollapse,
-        navWidth: '64px'
+        isCollapse: this.isCollapse
       })
     }
   }

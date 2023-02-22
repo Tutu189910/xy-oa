@@ -1,44 +1,44 @@
 import yAxios from "@/server"
 
 const apiURL = {
-  getInfo: '/order/info',
-  update: '/order/update',
-  add: '/order/add',
-  query: '/order/query',
-  delete: '/order/delete',
+  getInfo: '/user/infoAll',
+  update: '/user/update',
+  add: '/user/register',
+  query: '/user/query',
+  delete: '/user/delete',
 }
 
-function queryOrder(data) {
+function queryAccount(data) {
   return yAxios.post({
     url: apiURL.query,
     data: data,
   })
 }
 
-function getOrderInfo() {
-  return yAxios.get({
+function getAccountInfo() {
+  return yAxios.post({
     url: apiURL.getInfo,
     isLoading: false
   })
 }
-function deleteOrder(data) {
+function deleteAccount(data) {
   return yAxios.post({
     url: apiURL.delete,
     data: data,
     isLoading: false
   })
 }
-function updateOrder(data) {
+function updateAccount(data) {
   return yAxios.post({
     url: apiURL.update,
     data: data,
   })
 }
-function addOrder(data) {
+function addAccount(data) {
   return yAxios.post({
     url: apiURL.add,
     data: data,
   })
 }
 
-export { queryOrder, getOrderInfo, deleteOrder, updateOrder, addOrder }
+export { queryAccount, getAccountInfo, deleteAccount, updateAccount, addAccount }

@@ -4,7 +4,7 @@ const apiURL = {
   // 登录
   login: '/api/login',
   //获取用户信息
-  getInfo: '/home/getInfo'
+  getInfo: '/user/getInfo'
 }
 
 function login(data) {

@@ -82,11 +82,11 @@ const employee = [
 
 export function getRouters(level) {
   switch (level) {
-    case 2:
+    case 0:
       return root;
     case 1:
       return storeManager;
-    case 0:
+    case 2:
       return employee;
   }
 }

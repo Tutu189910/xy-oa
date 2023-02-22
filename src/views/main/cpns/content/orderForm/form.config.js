@@ -13,15 +13,14 @@ export default {
       label: '手机号:',
       span: { sm: 24, md: 12, lg: 5, xl: 5 }
     },
-
     {
-      field: 'state',
+      field: 'clothes_status',
       type: 'select',
       label: '订单状态:',
-      value: { 0: '已取衣', 1: '未完成' },
+      value: { '未完成': 0, '已取衣': 1, },
       span: { sm: 24, md: 12, lg: 4, xl: 4 }
     }, {
-      field: 'getDate',
+      field: 'ordercol_price',
       type: 'daterange',
       label: '收衣日期:',
       span: { sm: 24, md: 12, lg: 9, xl: 9 }
@@ -42,6 +41,10 @@ export default {
     //     }
     //   }
     // }
+  ],
+  btns: [
+    { title: '查询', type: 'primary', size: 'small', icon: 'el-icon-search' },
+    { title: '收衣', type: 'success', size: 'small', icon: 'el-icon-plus' }
   ],
   colLayout: { span: 8 }
 }

@@ -5,6 +5,7 @@
       <span v-if="!isCollapse">洗衣管理系统</span>
     </div>
     <el-menu
+      class="el-menu-vertical-demo"
       :default-active="currentItme"
       @open="handleOpen"
       @close="handleClose"
@@ -12,7 +13,6 @@
       text-color="#fff"
       active-text-color="#7e9cff"
       :collapse="isCollapse"
-      :collapse-transition="false"
     >
       <div v-for="item in menu" :key="item.title">
         <template v-if="item.children"
@@ -80,6 +80,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
 .main-aside {
   .logo {
     display: flex;

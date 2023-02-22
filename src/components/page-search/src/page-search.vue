@@ -1,32 +1,44 @@
 <template>
   <div class="page-search">
-    <el-row type="flex" justify="end" align="middle">
+    <el-row
+      type="flex"
+      justify="space-between"
+      align="middle"
+      style="width: 100%; flex-wrap: wrap"
+    >
       <el-col v-bind="{ sm: 24, md: 24, lg: 20, xl: 20 }">
         <base-form
           class="form-query"
           :formConfig="formConfig"
-          v-model="formDatas"
-          @query="changeForm"
+          @change="changeData"
+          @query="queryList"
+          ref="form"
         ></base-form>
       </el-col>
-      <el-col v-bind="{ sm: 24, md: 24, lg: 4, xl: 4 }"
-        ><div class="form-btn">
-          <el-button
-            round
-            type="primary"
-            icon="el-icon-search"
-            size="small"
-            @click="queryOrderList"
-          >
-            查询
-          </el-button>
-          <slot>
-            <el-button round type="success" icon="el-icon-plus" size="small">
-              收衣
-            </el-button></slot
-          >
-        </div></el-col
-      >
+      <el-col v-bind="{ sm: 24, md: 24, lg: 4, xl: 4 }">
+        <template>
+          <div class="form-btn">
+            <el-button
+              round
+              :type="formConfig.btns[0].type"
+              :icon="formConfig.btns[0].icon"
+              :size="formConfig.btns[0].size"
+              @click="queryList"
+            >
+              {{ formConfig.btns[0].title }}
+            </el-button>
+            <el-button
+              round
+              :type="formConfig.btns[1].type"
+              :icon="formConfig.btns[1].icon"
+              :size="formConfig.btns[1].size"
+              @click="addList"
+            >
+              {{ formConfig.btns[1].title }}
+            </el-button>
+          </div>
+        </template>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -43,23 +55,23 @@ export default {
   components: { baseForm },
   data() {
     return {
-      formDatas: {}
+      formData: {}
     }
   },
   methods: {
-    changeForm(data) {
-      this.formDatas = { ...data }
+    // changeForm(data) {
+    //   this.formDatas = { ...data }
+    //   this.queryList()
+    // },
+    changeData(data) {
+      this.formData = { ...data }
     },
-    queryOrderList() {
-      const queryLoad = {
-        query_name: this.formDatas.query_name ?? 0,
-        query_phone: this.formDatas.query_phone ?? 0,
-        start_Time: this.formDatas.getDate[0] ?? 0,
-        over_Time: this.formDatas.getDate[1] ?? 0
-      }
-      console.log(this.formDatas)
-      this.$store.dispatch('order/queryOrder', queryLoad)
-      this.tableData = this.$store.state.order.orderList
+    queryList() {
+      this.$emit('queryList', this.formData)
+      this.$refs['form'].clear()
+    },
+    addList() {
+      this.$emit('addList')
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <el-container class="container">
-      <el-aside :width="navWidth">
+      <el-aside :width="200">
         <main-aside :isCollapse="isCollapse"></main-aside>
       </el-aside>
       <el-container>
@@ -9,7 +9,13 @@
           <main-header @openNav="openNav" @closeNav="closeNav"></main-header>
         </el-header>
         <el-main>
-          <router-view></router-view>
+          <transition
+            :duration="300"
+            leave-active-class="animate__animated animate__fadeOut"
+            mode="out-in"
+          >
+            <router-view></router-view>
+          </transition>
         </el-main>
       </el-container>
     </el-container>
@@ -23,17 +29,14 @@ export default {
   components: { mainAside, MainHeader },
   data() {
     return {
-      navWidth: '200px',
       isCollapse: null
     }
   },
   methods: {
     openNav(data) {
-      this.navWidth = data.navWidth
       this.isCollapse = !data.isCollapse
     },
     closeNav(data) {
-      this.navWidth = data.navWidth
       this.isCollapse = !data.isCollapse
     }
   }
@@ -47,6 +50,7 @@ export default {
   .container {
     width: 100%;
     height: 100%;
+
     .el-aside {
       height: 100%;
       background: #293246;
