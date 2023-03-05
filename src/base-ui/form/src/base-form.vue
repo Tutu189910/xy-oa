@@ -28,6 +28,27 @@
                 >
               </el-form-item>
             </template>
+            <template v-if="item.type === 'textarea'">
+              <el-form-item :label="item.label" :label-width="item.labelWidth">
+                <el-input
+                  type="textarea"
+                  :rows="item.rows"
+                  placeholder="请输入内容"
+                  v-model.lazy="formDatas[`${item.field}`]"
+                >
+                </el-input>
+              </el-form-item>
+            </template>
+            <template v-if="item.type === 'password'">
+              <el-form-item :label="item.label" :label-width="item.labelWidth">
+                <el-input
+                  :type="item.type"
+                  v-model.lazy="formDatas[`${item.field}`]"
+                  size="small"
+                  :placeholder="item.placeholder ?? ''"
+                ></el-input>
+              </el-form-item>
+            </template>
             <template v-if="item.type === 'swicth'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-switch
@@ -40,8 +61,7 @@
                 </el-switch>
               </el-form-item>
             </template>
-
-            <template v-else-if="item.type === 'daterange'">
+            <template v-if="item.type === 'daterange'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-date-picker
                   v-model.lazy="formDatas[`${item.field}`]"
@@ -50,11 +70,12 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   size="small"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                 >
                 </el-date-picker>
               </el-form-item>
             </template>
-            <template v-else-if="item.type === 'select'">
+            <template v-if="item.type === 'select'">
               <el-form-item :label="item.label" :label-width="item.labelWidth">
                 <el-select
                   v-model.lazy="formDatas[`${item.field}`]"
@@ -65,7 +86,7 @@
                   <el-option
                     v-for="(value, key) in item.value"
                     :key="key"
-                    :label="value.label ?? key"
+                    :label="key"
                     :value="value"
                   >
                   </el-option>
@@ -130,7 +151,7 @@ export default {
   created() {
     // console.log(this.formDatas)
     // this.formDatasCopy = JSON.parse(JSON.stringify(this.formDatas))
-    this.formDatas = JSON.parse(JSON.stringify(this.baseDatas))
+    this.formDatas = JSON.parse(JSON.stringify(this.baseDatas ?? {}))
   }
 }
 </script>

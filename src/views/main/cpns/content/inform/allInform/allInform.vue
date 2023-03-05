@@ -1,47 +1,35 @@
 <template>
-  <div class="orderForm">
+  <div class="allInform">
     <div class="form-title">{{ formConfig.title }}</div>
     <page-search
       :formConfig="formConfig"
       v-model="formDatas"
-      @queryList="queryOrderList"
-      @addList="addOrderList"
+      @queryList="queryVipUserList"
     ></page-search>
     <base-table
       class="form-table"
       :tableConfig="tableConfig"
       :tableData="tableData"
     >
-      <template #id="id">
-        <el-tag>
-          {{ id.row.clothes_id }}
-        </el-tag>
-      </template>
       <template #status="status">
-        <el-button
-          round
-          size="mini"
-          :type="status.row.clothes_status ? 'success' : 'danger'"
+        <el-switch
+          :value="status.row.status"
+          :inactive-value="0"
+          :active-value="1"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          disabled
         >
-          {{ status.row.clothes_status ? '已取衣' : '未完成' }}
-        </el-button>
+        </el-switch>
       </template>
-      <template #type="type">
-        {{ type.row.type_name }}
+      <template #info="info">
+        {{ info.row.info }}
       </template>
-      <template #colour="colour">
-        {{ colour.row.clothes_color }}
-      </template>
-      <template #getTime="getTime">
-        {{ flitTime(getTime.row.clothes_getTime) }}
-      </template>
-      <template #price="price">
-        <el-tag type="success" style="min-width: 80px">
-          {{ price.row.ordercol_price + '元' }}</el-tag
-        >
+      <template #date_created="date_created">
+        {{ flitTime(date_created.row.date_created) }}
       </template>
       <template #handle>
-        <el-table-column label="操作" :min-width="100" align="center">
+        <el-table-column label="操作" :min-width="80" align="center">
           <template slot-scope="scope">
             <span class="btns">
               <el-button
@@ -51,11 +39,11 @@
                 >修改</el-button
               >
               <el-button
-                :disabled="!!scope.row.clothes_status"
+                :disabled="!scope.row.status"
                 type="danger"
                 size="mini"
-                @click="deleteOrder(scope.row)"
-                >取衣</el-button
+                @click="deleteVipUser(scope.row)"
+                >删除</el-button
               >
             </span>
           </template>
@@ -69,9 +57,9 @@
         @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-sizes="[5, 10, 20]"
-        :page-size="5"
+        :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="this.$store.state.order.orderList.result.length"
+        :total="this.$store.state.vipUser.vipUserList.result.length"
       >
       </el-pagination>
     </div>
@@ -112,18 +100,17 @@ export default {
       msgboxConfig,
       formDatas: {},
       msgboxDatas: {},
-      pageSize: 5,
+      pageSize: 10,
       currentPage: 1,
       dialogVisible: false,
       msgboxTitle: ''
-      // tableData: this.$store.state.order.orderList.result
     }
   },
   computed: {
     tableData: {
       set() {},
       get() {
-        const datas = this.$store.state.order.orderList.result.slice(
+        const datas = this.$store.getters['inform/getInform'].result.slice(
           this.currentPage * this.pageSize - this.pageSize,
           this.currentPage * this.pageSize
         )
@@ -135,48 +122,30 @@ export default {
     changeForm(data) {
       this.formDatas = { ...data }
     },
-    queryOrderList(Datas) {
-      if (Datas.getDate) {
+    queryVipUserList(Datas) {
+      if (Datas.date_created) {
         Datas = {
           ...Datas,
           start_Time: Datas.getDate[0],
           over_Time: Datas.getDate[1]
         }
       }
-      this.$store.dispatch('order/queryOrder', Datas)
-      this.tableData = this.$store.state.order.orderList
+      this.$store.dispatch('inform/queryInform', Datas)
+      this.tableData = this.$store.getters['inform/getInform']
       this.currentPage = 1
     },
-    addOrderList() {
-      this.msgboxDatas = {}
-      this.dialogVisible = true
-      this.msgboxTitle = '收衣'
-    },
     handleClose(done) {
-      let confirmConfig = {}
-      if (this.msgboxTitle == '收衣') {
-        confirmConfig = {
-          title: '提示',
-          type: 'warning',
-          message: '收衣取消!'
-        }
-      } else {
-        confirmConfig = {
-          title: '提示',
-          type: 'warning',
-          message: '取消修改！'
-        }
+      let confirmConfig = {
+        title: '提示',
+        type: 'warning',
+        message: '修改取消!'
       }
-      this.$confirm(
-        `是否取消${this.msgboxTitle == '收衣' ? '收衣' : '修改'}?`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }
-      )
+      this.$confirm(`是否取消修改?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      })
         .then(() => {
           this.$notify(confirmConfig)
           this.dialogVisible = false
@@ -187,55 +156,37 @@ export default {
     updateOrder(row) {
       this.msgboxDatas = row
       this.dialogVisible = true
-      this.msgboxTitle = '订单详情'
+      this.msgboxTitle = '通知详情'
     },
     handleYep() {
       const t = this.$refs['msgbox'].formDatas
-      if (this.msgboxTitle === '订单详情') {
-        console.log(this.$refs['msgbox'].formDatas)
-        this.$store
-          .dispatch('order/updateOrder', t)
-          .then(() => {
-            this.$notify({
-              title: '提示',
-              type: 'success',
-              message: '修改成功!'
-            })
+      const datas = {}
+      Object.keys(t).forEach((e) => {
+        if (e != 'date_created') datas[e] = t[e]
+      })
+      this.$store
+        .dispatch('inform/updateInform', {
+          ...datas,
+          author: this.$store.getters['getNickname']
+        })
+        .then(() => {
+          this.$notify({
+            title: '提示',
+            type: 'success',
+            message: '修改成功!'
           })
-          .catch(() => {
-            this.$notify({
-              title: '提示',
-              type: 'error',
-              message: '修改失败!'
-            })
+        })
+        .catch(() => {
+          this.$notify({
+            title: '提示',
+            type: 'error',
+            message: '修改失败!'
           })
-      }
-      if (this.msgboxTitle === '收衣') {
-        console.log(this.$refs['msgbox'].formDatas)
-        this.$store
-          .dispatch('order/addOrder', {
-            ...t,
-            clothes_getTime: Date.now()
-          })
-          .then(() => {
-            this.$notify({
-              title: '提示',
-              type: 'success',
-              message: '收衣成功!'
-            })
-          })
-          .catch(() => {
-            this.$notify({
-              title: '提示',
-              type: 'error',
-              message: '收衣失败!'
-            })
-          })
-      }
+        })
       this.dialogVisible = false
     },
-    deleteOrder(row) {
-      this.$confirm('是否取衣，结束订单?', '提示', {
+    deleteVipUser(row) {
+      this.$confirm('是否注删除该通知?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -243,19 +194,19 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('order/deleteOrder', { id: row.id })
+            .dispatch('inform/deleteInform', { id: row.id })
             .then(() => {
               this.$notify({
                 title: '提示',
                 type: 'success',
-                message: '取衣成功!'
+                message: '删除成功!'
               })
             })
             .catch(() => {
               this.$notify({
                 title: '提示',
                 type: 'error',
-                message: '取衣失败!'
+                message: '删除失败!'
               })
             })
         })
@@ -263,7 +214,7 @@ export default {
           this.$notify({
             title: '提示',
             type: 'warning',
-            message: '取消取衣!'
+            message: '取消删除!'
           })
         })
     },
@@ -278,14 +229,13 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('order/setupStore')
-    console.log(111)
+    this.$store.dispatch('inform/setupStore')
   }
 }
 </script>
 
 <style lang="less" scoped>
-.orderForm {
+.allInform {
   width: 100%;
   .form-title {
     padding: 8px 10px;

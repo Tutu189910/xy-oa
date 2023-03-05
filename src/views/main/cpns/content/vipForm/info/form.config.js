@@ -11,7 +11,7 @@ export default {
       field: 'vip_phone',
       type: 'input',
       label: '手机号:',
-      span: { sm: 24, md: 12, lg: 6, xl: 5 }
+      span: { sm: 24, md: 12, lg: 5, xl: 4 }
     }
     // {
     //   field: 'gender',

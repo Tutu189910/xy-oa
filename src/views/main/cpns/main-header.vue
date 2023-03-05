@@ -17,7 +17,7 @@
           <el-link :underline="false">{{ userName }}</el-link>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>我的信息</el-dropdown-item>
+          <el-dropdown-item command="myInfo">我的信息</el-dropdown-item>
           <el-dropdown-item divided command="outPut">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -33,15 +33,16 @@ export default {
   emits: ['openNav', 'closeNav'],
   data() {
     return {
-      isCollapse: true
+      isCollapse: true,
+      userName: this.$store.getters.getNickname ?? ''
     }
   },
   computed: {
-    userName() {
-      return this.$store.state.login.uesrInfo.nickname
-    },
+    // userName() {
+    //   return this.$store.state.login.uesrInfo.nickname
+    // },
     userAvatar() {
-      return this.userName[0]
+      return this.userName[0] ?? ''
     },
     pathTitle() {
       const { itemTitle } = isPath(
@@ -52,12 +53,19 @@ export default {
       return titleArr
     }
   },
+  watch: {
+    '$store.state.login.userInfo.nickname'() {
+      this.userName = this.$store.getters.getNickname
+    }
+  },
   methods: {
     handleClick(command) {
       if (command === 'outPut') {
         removeLocal('token')
         this.$router.replace('/login')
         this.$store.commit('login/changeToken', '')
+      } else if (command === 'myInfo') {
+        this.$router.replace('/main/setting')
       }
     },
     openAside() {
@@ -72,6 +80,11 @@ export default {
         isCollapse: this.isCollapse
       })
     }
+  },
+  created() {
+    this.$store.dispatch('login/setupStore').then(() => {
+      this.userName = this.$store.getters.getNickname
+    })
   }
 }
 </script>

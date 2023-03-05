@@ -29,15 +29,17 @@ export default {
       activeSet: '1'
     }
   },
+  watch: {
+    '$route.path'() {
+      this.activeSet = this.$route.path == '/main/setting/baseSet' ? '1' : '2'
+    }
+  },
   methods: {
     handleItemClick(page) {
       if (page !== this.$route.path) {
         this.$router.push(page ?? '/not-found')
       }
     }
-  },
-  created() {
-    this.activeSet = this.$route.path == '/main/setting/baseSet' ? '1' : '2'
   }
 }
 </script>

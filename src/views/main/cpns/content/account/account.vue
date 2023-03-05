@@ -14,7 +14,7 @@
     >
       <template #level="level">
         <el-tag>
-          {{ level.row.level }}
+          {{ level.row.level_name }}
         </el-tag>
       </template>
       <template #status="status">
@@ -38,15 +38,14 @@
               <el-button
                 type="primary "
                 size="mini"
-                @click="updateOrder(scope.row)"
+                @click="updateAccount(scope.row)"
                 >修改</el-button
               >
               <el-button
-                :disabled="!!scope.row.clothes_status"
-                type="danger"
+                :type="scope.row.status ? 'danger ' : 'success '"
                 size="mini"
-                @click="deleteVipUser(scope.row)"
-                >禁用</el-button
+                @click="changeUserStatus(scope.row)"
+                >{{ scope.row.status ? '禁用' : '启用' }}</el-button
               >
             </span>
           </template>
@@ -114,14 +113,22 @@ export default {
     tableData: {
       set() {},
       get() {
-        const datas = this.$store.state.account.accountList.result.slice(
+        const datas = this.$store.state.account.accountList.result ?? []
+
+        return datas.slice(
           this.currentPage * this.pageSize - this.pageSize,
           this.currentPage * this.pageSize
         )
-        return datas
       }
     }
   },
+  // watch:{
+  //   tableData:{
+  //     function (newV) {
+
+  //     }
+  //   }
+  // },
   methods: {
     changeForm(data) {
       this.formDatas = { ...data }
@@ -134,7 +141,7 @@ export default {
           over_Time: Datas.getDate[1]
         }
       }
-      this.$store.dispatch('vipUser/queryVipUser', Datas)
+      this.$store.dispatch('account/queryAccount', Datas)
       this.tableData = this.$store.state.order.orderList
       this.currentPage = 1
     },
@@ -167,25 +174,27 @@ export default {
           type: 'warning',
           center: true
         }
-      )
-        .then(() => {
-          this.$notify(confirmConfig)
-          this.dialogVisible = false
-          done()
-        })
-        .catch(() => {})
+      ).then(() => {
+        this.$notify(confirmConfig)
+        this.dialogVisible = false
+        done()
+      })
     },
-    updateOrder(row) {
+    updateAccount(row) {
+      row.password = ''
       this.msgboxDatas = row
       this.dialogVisible = true
       this.msgboxTitle = '账号详情'
     },
     handleYep() {
       const t = this.$refs['msgbox'].formDatas
+      console.log(t)
       if (this.msgboxTitle === '账号详情') {
-        console.log(this.$refs['msgbox'].formDatas)
         this.$store
-          .dispatch('account/updateAccount', t)
+          .dispatch('account/updateAccount', {
+            ...t,
+            password: t.password ?? 'xy123456'
+          })
           .then(() => {
             this.$notify({
               title: '提示',
@@ -202,12 +211,8 @@ export default {
           })
       }
       if (this.msgboxTitle === '新增') {
-        console.log(this.$refs['msgbox'].formDatas)
         this.$store
-          .dispatch('account/addAccount', {
-            ...t,
-            password: '123456'
-          })
+          .dispatch('account/addAccount', t)
           .then(() => {
             this.$notify({
               title: '提示',
@@ -225,38 +230,29 @@ export default {
       }
       this.dialogVisible = false
     },
-    deleteVipUser(row) {
-      this.$confirm('是否注销该账号?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      })
-        .then(() => {
-          this.$store
-            .dispatch('vipUser/deleteVipUser', { id: row.id })
-            .then(() => {
-              this.$notify({
-                title: '提示',
-                type: 'success',
-                message: '注销成功!'
-              })
-            })
-            .catch(() => {
-              this.$notify({
-                title: '提示',
-                type: 'error',
-                message: '注销失败!'
-              })
-            })
-        })
-        .catch(() => {
-          this.$notify({
-            title: '提示',
-            type: 'warning',
-            message: '取消注销!'
-          })
-        })
+    changeUserStatus(row) {
+      const dispatch = {
+        patch: 'account/changeAccountStatus',
+        payload: { id: row.id, status: !row.status ? 1 : 0 }
+      }
+      if (row.status === 0) {
+        const msg = {
+          main: '是否启用该账号?',
+          success: '启用成功',
+          warning: '取消启用',
+          error: '启用失败'
+        }
+        this.createConfirm(msg, dispatch)
+      }
+      if (row.status === 1) {
+        let msg = {
+          main: '是否禁用该账号?',
+          success: '禁用成功',
+          warning: '取消禁用',
+          error: '禁用失败'
+        }
+        this.createConfirm(msg, dispatch)
+      }
     },
     flitTime(date) {
       return dayjs(date).format('YYYY年MM月DD日 HH:mm')
@@ -266,13 +262,58 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
+    },
+    createConfirm(msg, dispatch) {
+      // const dispatch = {
+      //   请求函数##
+      //   patch: 'vipUser/deleteVipUser',
+      //   请求信息##
+      //   payload: { id: row.id }
+      // }
+      // let msg = {
+      //    弹窗标题##
+      //     main: '是否启用该账号?',
+      //    状态内容##
+      //     success: '启用成功',
+      //     warning: '取消启用',
+      //     error: '启用失败'
+      //   }
+      this.$confirm(msg.main, msg.title ?? '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      })
+        .then(() => {
+          this.$store
+            .dispatch(dispatch.patch, dispatch.payload)
+            .then(() => {
+              this.$notify({
+                title: '提示',
+                type: 'success',
+                message: msg.success
+              })
+            })
+            .catch(() => {
+              this.$notify({
+                title: '提示',
+                type: 'error',
+                message: msg.error
+              })
+            })
+        })
+        .catch(() => {
+          this.$notify({
+            title: '提示',
+            type: 'warning',
+            message: msg.warning
+          })
+        })
     }
   },
   created() {
-    // this.$store.dispatch('account/getAccountList')
     this.$store.dispatch('account/setupStore')
-  },
-  mounted() {}
+  }
 }
 </script>
 

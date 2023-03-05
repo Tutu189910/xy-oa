@@ -4,7 +4,7 @@ export default {
   namespaced: true,
   state() {
     return {
-      vipUserList: ''
+      vipUserList: { result: [], length: 0 }
     }
   },
   getters: {

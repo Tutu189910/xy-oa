@@ -14,7 +14,7 @@ function login(data) {
   })
 }
 
-function getUesrInfo(data) {
+function getUserInfo(data) {
   return yAxios.get({
     url: apiURL.getInfo,
     data: data,
@@ -22,4 +22,4 @@ function getUesrInfo(data) {
   })
 }
 
-export { login, getUesrInfo }
+export { login, getUserInfo }

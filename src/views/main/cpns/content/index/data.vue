@@ -1,31 +1,31 @@
 <template>
   <div class="data">
     <el-row :gutter="20" class="tag">
-      <el-col :span="6" v-for="item in tagData" :key="item.title">
-        <base-card :title="item.title">
+      <el-col :span="6" v-for="(value, key) in tagData" :key="key">
+        <base-card :title="key">
           <template #main>
-            <div>{{ item.num }}</div>
+            <div>{{ value }}</div>
           </template>
         </base-card>
       </el-col>
     </el-row>
     <el-row :gutter="18" class="ECharts">
       <el-col :span="16">
-        <base-card :title="'订单分析'">
+        <base-card :title="'近七日收、取衣情况'">
           <template #main>
             <base-echarts :setting="echarts.datas"></base-echarts>
           </template>
         </base-card>
       </el-col>
       <el-col :span="8">
-        <base-card :title="'图表分析'">
+        <base-card :title="'近一周订单情况'">
           <template #main>
             <base-echarts :setting="echarts.order"></base-echarts>
           </template>
         </base-card>
       </el-col>
       <el-col :span="24" style="margin-top: 10px">
-        <base-card :title="'订单曲线'">
+        <base-card :title="'年订单曲线'">
           <template #main>
             <base-echarts :setting="echarts.curve"></base-echarts>
           </template>
@@ -45,24 +45,7 @@ export default {
   components: { baseCard, BaseEcharts },
   data() {
     return {
-      tagData: {
-        vips: {
-          title: '会员数',
-          num: 1
-        },
-        orders: {
-          title: '总订单数',
-          num: 1
-        },
-        ongoing: {
-          title: '进行中',
-          num: 1
-        },
-        newOrder: {
-          title: '今日新增订单数',
-          num: 1
-        }
-      },
+      tagData: this.$store.getters.getSum,
       echarts: {
         order: {
           tooltip: {
@@ -74,15 +57,12 @@ export default {
           },
           series: [
             {
-              name: 'Access From',
+              name: '近一周',
               type: 'pie',
               radius: '50%',
               data: [
-                { value: 1048, name: 'Search Engine' },
-                { value: 735, name: 'Direct' },
-                { value: 580, name: 'Email' },
-                { value: 484, name: 'Union Ads' },
-                { value: 300, name: 'Video Ads' }
+                { value: this.weekData().outCount, name: '已完成' },
+                { value: this.weekData().getCount, name: '进行中' }
               ],
               emphasis: {
                 itemStyle: {
@@ -95,20 +75,63 @@ export default {
           ]
         },
         datas: {
-          tooltip: {},
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              crossStyle: {
+                color: '#999'
+              }
+            }
+          },
+          toolbox: {
+            feature: {
+              dataView: { show: true, readOnly: false },
+              magicType: { show: true, type: ['line', 'bar'] },
+              restore: { show: true },
+              saveAsImage: { show: true }
+            }
+          },
           legend: {
-            data: ['销量'],
-            right: 'right'
+            data: ['收衣数', '取衣数'],
+            bottom: 'bottom'
           },
-          xAxis: {
-            data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-          },
-          yAxis: {},
+          xAxis: [
+            {
+              type: 'category',
+              data: Object.keys(this.weekData().getData).reverse(),
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '件数',
+              interval: 5
+            }
+          ],
           series: [
             {
-              name: '销量',
+              name: '取衣数',
               type: 'bar',
-              data: [5, 20, 36, 10, 10, 20]
+              tooltip: {
+                valueFormatter: function (value) {
+                  return value + '件'
+                }
+              },
+              data: Object.values(this.weekData().outData).reverse()
+            },
+            {
+              name: '收衣数',
+              type: 'bar',
+              tooltip: {
+                valueFormatter: function (value) {
+                  return value + ' 件'
+                }
+              },
+              data: Object.values(this.weekData().getData).reverse()
             }
           ]
         },
@@ -140,20 +163,7 @@ export default {
             {
               type: 'category',
               boundaryGap: false,
-              data: [
-                '一月',
-                '二月',
-                '三月',
-                '四月',
-                '五月',
-                '六月',
-                '七月',
-                '八月',
-                '九月',
-                '十月',
-                '十一月',
-                '十二月'
-              ]
+              data: Object.keys(this.yearData().count)
             }
           ],
           yAxis: [
@@ -163,65 +173,104 @@ export default {
           ],
           series: [
             {
-              name: 'Email',
+              name: '总订单',
               type: 'line',
               stack: 'Total',
               areaStyle: {},
               emphasis: {
                 focus: 'series'
               },
-              data: [120, 132, 101, 134, 90, 230, 210]
+              data: Object.values(this.yearData().count)
             },
             {
-              name: 'Union Ads',
+              name: '收衣数',
               type: 'line',
               stack: 'Total',
               areaStyle: {},
               emphasis: {
                 focus: 'series'
               },
-              data: [220, 182, 191, 234, 290, 330, 310]
+              data: Object.values(this.yearData().getData)
             },
             {
-              name: 'Video Ads',
+              name: '取衣数',
               type: 'line',
               stack: 'Total',
               areaStyle: {},
               emphasis: {
                 focus: 'series'
               },
-              data: [150, 232, 201, 154, 190, 330, 410]
-            },
-            {
-              name: 'Direct',
-              type: 'line',
-              stack: 'Total',
-              areaStyle: {},
-              emphasis: {
-                focus: 'series'
-              },
-              data: [320, 332, 301, 334, 390, 330, 320]
-            },
-            {
-              name: 'Search Engine',
-              type: 'line',
-              stack: 'Total',
-              label: {
-                show: true,
-                position: 'top'
-              },
-              areaStyle: {},
-              emphasis: {
-                focus: 'series'
-              },
-              data: [820, 932, 901, 934, 1290, 1330, 1320]
+              data: Object.values(this.yearData().outData)
             }
           ]
         }
       }
     }
   },
-  mounted() {}
+  watch: {
+    'store.state.data': {
+      function() {
+        this.tagData = this.$store.getters.getSum
+      },
+      deep: true
+    }
+  },
+  methods: {
+    weekData() {
+      let getData = {}
+      let outData = {}
+      let currentDate = new Date()
+      let get = this.$store.state.data.weekData.get
+      let out = this.$store.state.data.weekData.out
+      for (let i = 0; i < 7; i++) {
+        currentDate.setDate(currentDate.getDate() - 1)
+        getData[new Date(currentDate).toISOString().slice(0, 10)] = 0
+        outData[new Date(currentDate).toISOString().slice(0, 10)] = 0
+      }
+      get.forEach((e) => {
+        getData[e.day.slice(0, 10)] = e['count']
+      })
+      out.forEach((e) => {
+        outData[e.day.slice(0, 10)] = e['count']
+      })
+      let getCount = Object.values(getData).reduce((v, sum) => {
+        return (sum += v)
+      }, 0)
+      let outCount = Object.values(outData).reduce((v, sum) => {
+        return (sum += v)
+      }, 0)
+      return { getData, outData, getCount, outCount }
+    },
+    yearData() {
+      let getData = {}
+      let outData = {}
+      let count = {}
+      let get = this.$store.state.data.yearData.get
+      let out = this.$store.state.data.yearData.out
+      for (let i = 1; i < 13; i++) {
+        getData[i + '月'] = 0
+        outData[i + '月'] = 0
+        count[i + '月'] = 0
+      }
+      get.forEach((e) => {
+        getData[e.month + '月'] = e['month']
+      })
+      out.forEach((e) => {
+        outData[e.month + '月'] = e['month']
+      })
+      Object.keys(count).forEach((e) => {
+        count[e] = getData[e] + outData[e]
+      })
+      console.log(count)
+      return { getData, outData, count }
+    }
+  },
+  created() {
+    this.$store.dispatch('data/setupStore').then(() => {
+      this.tagData = this.$store.getters.getSum
+    })
+    this.yeraData()
+  }
 }
 </script>
 

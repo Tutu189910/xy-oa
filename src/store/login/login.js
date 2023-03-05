@@ -1,79 +1,83 @@
-import { getUesrInfo, login } from "@/server/login"
+import { getUserInfo, login } from "@/server/login"
 import { setLocal, getLocal } from "@/tool/localTool"
 import router from "@/router"
 import { getMenu } from "./menu.config"
-import { Message } from "element-ui"
-// import { getRouters } from "@/router/mian/userMenus"
+import { getRouteMap } from "@/router/mian/userMenus"
 
 export default {
   namespaced: true,
   state() {
     return {
       token: '',
-      uesrInfo: '',
-      uesrMenu: ''
+      userInfo: {},
+      userMenu: {},
+      routeMap: JSON.parse(sessionStorage.getItem('routeMap')) || [],
+      hasGetRoute: false
     }
   },
   getters: {
+    hasGetRoute: state => state.hasGetRoute,
   },
   mutations: {
     changeToken(state, token) {
       state.token = token
     },
-    changeUesrInfo(state, uesrInfo) {
-      state.uesrInfo = uesrInfo
+    changeUserInfo(state, userInfo) {
+      state.userInfo = userInfo
     },
-    changeUesrMenu(state, uesrMenu) {
-      state.uesrMenu = uesrMenu
+    changeUserMenu(state, userMenu) {
+      state.userMenu = userMenu
+    },
+    setRouteMap(state, routers) {
+      state.routeMap = routers
+      // 为了防止用户刷新页面导致动态创建的路由失效，将其存储在本地中
+      sessionStorage.setItem('routeMap', JSON.stringify(routers));
+    },
+    setDynamicRouteMap(state, routers) {
+      state.hasGetRoute = true
+      let routerMaps = routers
+      // 追加路由
+      // 这块是重点，如果直接使用addRoute是无效的
+      routerMaps.forEach(item => {
+        router.addRoute('main', item);
+      })
     }
-
   },
   actions: {
     async yLogin({ commit, state }, payload) {
       const res = await login(payload)
-
-      console.log(res);
       if (res.token) {
         setLocal('token', res.token)
         commit('changeToken', res.token)
-        const { data } = await getUesrInfo()
-        commit('changeUesrInfo', data)
-        commit('changeUesrMenu', getMenu(state.uesrInfo.level))
+        const { data } = await getUserInfo()
+        commit('changeUserInfo', data)
+        console.log(getMenu(state.userInfo.level), state.userInfo.level);
+        commit('changeUserMenu', getMenu(state.userInfo.level))
 
-        // for (let t = 0; t < userMenus.length; t++) {
-        //   console.log(userMenus);
-        //   router.addRoute('main', userMenus[t])
-        // }
-
-        // 动态注册路由  ###（有问题）
-        // router.reloadRouter()
-        // getRouters(state.uesrInfo.level).forEach(item => {
-        //   router.addRoute('main', item)
-        // });
-        console.log(router);
+        const menus = getRouteMap(state.userInfo.level)
+        commit('setRouteMap', menus)
+        commit('setDynamicRouteMap', menus)
 
         router.push('/')
-        Message({
-          type: 'success',
-          message: '登录成功'
-        })
+        console.log(router.getRoutes());
       } else {
-        Message({
-          type: 'error',
-          message: '账号或密码错误'
-        })
+        throw new Error('失败')
       }
     },
     async setupStore({ commit, state }) {
       const token = getLocal('token')
       commit('changeToken', token)
-      const { data } = await getUesrInfo()
-      commit('changeUesrInfo', data)
+      const { data } = await getUserInfo()
+      commit('changeUserInfo', data)
       if (token) {
-        commit('changeUesrMenu', getMenu(state.uesrInfo.level))
+        commit('changeUserMenu', getMenu(state.userInfo.level))
       }
-    }
+    },
+    updateRouteOfUser({ commit }, routerMap) {
+      commit('setDynamicRouteMap', routerMap)
+    },
   },
   modules: {
   }
 }
+

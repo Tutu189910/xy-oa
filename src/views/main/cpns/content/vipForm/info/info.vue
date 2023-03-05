@@ -14,7 +14,7 @@
     >
       <template #type="type">
         <el-tag>
-          {{ type.row.vip_type }}
+          {{ type.row.type_name }}
         </el-tag>
       </template>
       <template #balance="balance">
@@ -260,21 +260,6 @@ export default {
     flitTime(date) {
       return dayjs(date).format('YYYY年MM月DD日 HH:mm')
     },
-    fliterType(t) {
-      let type
-      switch (t) {
-        case '0':
-          type = '精洗'
-          break
-        case '1':
-          type = '干洗'
-          break
-        case '2':
-          type = '熨烫'
-          break
-      }
-      return type
-    },
     handleSizeChange(val) {
       this.pageSize = val
     },
@@ -283,9 +268,6 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('vipUser/vipUserList')
-  },
-  mounted() {
     this.$store.dispatch('vipUser/setupStore')
   }
 }

@@ -4,7 +4,7 @@ export default {
   namespaced: true,
   state() {
     return {
-      orderList: ''
+      orderList: { result: [], length: 0 }
     }
   },
   getters: {

@@ -1,3 +1,4 @@
+import store, { setupStore } from '@/store'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -25,12 +26,24 @@ const routes = [
         component: () => import('@/views/main/cpns/content/orderForm/orderForm.vue')
       },
       {
-        path: 'vipForm',
-        component: () => import('@/views/main/cpns/content/vipForm/vipForm.vue')
+        path: 'vipForm/info',
+        component: () => import('@/views/main/cpns/content/vipForm/info/info.vue'),
+      },
+      {
+        path: 'vipForm/rights',
+        component: () => import('@/views/main/cpns/content/vipForm/rights/rights.vue'),
       },
       {
         path: 'account',
         component: () => import('@/views/main/cpns/content/account/account.vue')
+      },
+      {
+        path: 'inform/allinform',
+        component: () => import('@/views/main/cpns/content/inform/allInform/allInform.vue')
+      },
+      {
+        path: 'inform/publish',
+        component: () => import('@/views/main/cpns/content/inform/publish/publish.vue')
       },
       {
         path: 'setting',
@@ -67,22 +80,30 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach(async (to, from, next) => {
+  console.log(to.path);
+  if (to.path !== '/login' && !window.localStorage.getItem('token')) {
+    next({ name: 'login' })
+  } else {
+    if (to.path !== '/login') {
+      const hasGetRoute = store.getters['login/hasGetRoute']
+      const routeMap = JSON.parse(sessionStorage.getItem('routeMap'))
+      if (!hasGetRoute && routeMap) {
+        // 刷新页面且有route记录数据，可再次追加动态路由
+        store.dispatch('login/updateRouteOfUser', routeMap)
+        next({ ...to, replace: true })
+      }
+    }
+    if (!store.getters['userInfo']) setupStore()
+    next()
+  }
+})
 router.reloadRouter = function () {
   router.matcher = new VueRouter({
     mode: "history",
     routes
   }).matcher
 }
-
-router.beforeEach((to, from, next) => {
-  if (to.path !== '/login' && !window.localStorage.getItem('token')) {
-
-    next({ name: 'login' })
-  } else {
-    next()
-  }
-})
-
 
 
 export default router

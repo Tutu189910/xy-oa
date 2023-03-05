@@ -15,7 +15,7 @@
           ref="form"
         ></base-form>
       </el-col>
-      <el-col v-bind="{ sm: 24, md: 24, lg: 4, xl: 4 }">
+      <el-col v-bind="formConfig.btnLayout ?? { sm: 24, md: 24, lg: 4, xl: 4 }">
         <template>
           <div class="form-btn">
             <el-button
@@ -28,6 +28,7 @@
               {{ formConfig.btns[0].title }}
             </el-button>
             <el-button
+              v-if="formConfig.btns[1]"
               round
               :type="formConfig.btns[1].type"
               :icon="formConfig.btns[1].icon"

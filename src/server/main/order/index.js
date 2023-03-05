@@ -12,13 +12,14 @@ function queryOrder(data) {
   return yAxios.post({
     url: apiURL.query,
     data: data,
+    isLoading: true
   })
 }
 
 function getOrderInfo() {
   return yAxios.get({
     url: apiURL.getInfo,
-    isLoading: false
+    isLoading: true
   })
 }
 function deleteOrder(data) {

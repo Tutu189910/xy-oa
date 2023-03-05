@@ -1,31 +1,32 @@
 import yAxios from "@/server"
 
 const apiURL = {
-  getInfo: '/user/infoAll',
+  getInfo: '/user/getInfoAll',
   update: '/user/update',
   add: '/user/register',
   query: '/user/query',
-  delete: '/user/delete',
+  changeStatus: '/user/changeStatus',
 }
 
 function queryAccount(data) {
   return yAxios.post({
     url: apiURL.query,
     data: data,
+    isLoading: true
   })
 }
 
 function getAccountInfo() {
   return yAxios.post({
     url: apiURL.getInfo,
-    isLoading: false
+    isLoading: true
   })
 }
-function deleteAccount(data) {
+function changeAccountStatus(data) {
   return yAxios.post({
-    url: apiURL.delete,
+    url: apiURL.changeStatus,
     data: data,
-    isLoading: false
+    // isLoading: true
   })
 }
 function updateAccount(data) {
@@ -41,4 +42,4 @@ function addAccount(data) {
   })
 }
 
-export { queryAccount, getAccountInfo, deleteAccount, updateAccount, addAccount }
+export { queryAccount, getAccountInfo, changeAccountStatus, updateAccount, addAccount }

@@ -4,14 +4,21 @@
       {{ '基本设置' }}
     </div>
     <div class="set-main">
-      <el-form label-position="top" label-width="80px" :model="info">
+      <el-form
+        label-position="top"
+        label-width="80px"
+        :model="info"
+        :rules="rules"
+        status-icon
+        ref="changeInfo"
+      >
         <el-form-item label="用户名">
           <el-input v-model="info.username" disabled></el-input>
         </el-form-item>
-        <el-form-item label="姓名">
+        <el-form-item label="姓名" prop="nickname">
           <el-input v-model="info.nickname"></el-input>
         </el-form-item>
-        <el-form-item label="电话">
+        <el-form-item label="电话" prop="phone">
           <el-input v-model="info.phone"></el-input>
         </el-form-item>
         <el-form-item>
@@ -25,14 +32,62 @@
 </template>
 
 <script>
+import { updateUserInfo } from '@/server/main/setting'
 export default {
   data() {
     return {
-      info: {}
+      info: {},
+      rules: {
+        nickname: [
+          { message: '请输入姓名', trigger: 'blur', required: true },
+          {
+            message: '请输入正确的姓名',
+            trigger: 'blur',
+            pattern: /[\u4e00-\u9fa5a-zA-Z]{2,12}$/
+          }
+        ],
+        phone: [
+          {
+            message: '请输入正确的手机号',
+            trigger: 'blur',
+            pattern: /^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/
+          }
+        ]
+      }
     }
   },
   created() {
-    this.info = this.$store.state.login.uesrInfo
+    this.info = JSON.parse(JSON.stringify(this.$store.getters.getUserInfo))
+  },
+  methods: {
+    async submit() {
+      await updateUserInfo(this.info).then((list) => {
+        if (list.status) {
+          this.$notify({
+            title: '提示',
+            type: 'error',
+            message: '修改失败'
+          })
+        } else {
+          this.$notify({
+            title: '提示',
+            type: 'success',
+            message: '修改成功'
+          })
+        }
+      })
+
+      this.$store.dispatch('login/setupStore')
+    },
+    onSubmit() {
+      this.$refs['changeInfo'].validate((valid) => {
+        if (valid) {
+          this.submit()
+        } else {
+          return false
+        }
+      })
+    }
   }
 }
 </script>

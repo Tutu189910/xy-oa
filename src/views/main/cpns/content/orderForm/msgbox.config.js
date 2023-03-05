@@ -22,7 +22,14 @@ export default {
       field: 'clothes_type',
       type: 'select',
       label: '洗衣类型:',
-      value: { '中长款': 1, '短款': 0 },
+      value: {
+        '标准洗': '1',
+        '干洗': '2',
+        '熨烫': '3',
+        '皮草保养': '4',
+        '奢侈品保养': '5',
+        '鞋类服务': '6',
+      },
       span: { span: 12 }
     }, {
       field: 'clothes_color',
@@ -44,7 +51,7 @@ export default {
       field: 'clothes_status',
       type: 'swicth',
       label: '订单状态:',
-      value: { 1: '已取衣', 0: '未完成' },
+      value: { '未完成': 0, '已取衣': 1, },
       span: { sm: 24, md: 12, lg: 4, xl: 4 }
     },
 

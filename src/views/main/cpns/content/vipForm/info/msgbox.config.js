@@ -17,37 +17,15 @@ export default {
       type: 'select',
       label: '会员类型:',
       span: { sm: 24, md: 16, lg: 16, xl: 16 },
-      value: {
-        gold
-          : {
-          label: '黄金会员',
-          value: 0
-        },
-        platinum: {
-          label: '白金会员',
-          value: 1
-        },
-        diamond: {
-          label: '钻石会员',
-          value: 2
-        }
-      }
+      value: { '黄金会员': '3', '白金会员': '2', "钻石会员": '1' }
+
     },
     {
       field: 'vip_gender',
       type: 'select',
       label: '性别:',
       span: { sm: 24, md: 12, lg: 12, xl: 10 },
-      value: {
-        0: {
-          label: '女',
-          value: '女'
-        },
-        1: {
-          label: '男',
-          value: '男'
-        }
-      }
+      value: { '女': 0, '男': 1 }
     },
     {
       field: 'balance',

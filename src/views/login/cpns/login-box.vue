@@ -15,7 +15,7 @@
           v-model="loginInfo.username"
           autocomplete="off"
           :autofocus="!loginInfo.username"
-          @keyup.enter.native="login"
+          @keyup.enter.native="onSubmit"
         ></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
@@ -25,7 +25,7 @@
           :autofocus="loginInfo.password === ''"
           autocomplete="off"
           show-password
-          @keyup.enter.native="login"
+          @keyup.enter.native="onSubmit"
         ></el-input>
       </el-form-item>
     </el-form>
@@ -33,7 +33,7 @@
       <el-checkbox v-model="loginInfo.isKeep">记住密码</el-checkbox>
       <el-link type="primary">忘记密码</el-link>
     </div>
-    <el-button type="primary" @click="login">立即登录</el-button>
+    <el-button type="primary" @click="onSubmit">立即登录</el-button>
   </div>
 </template>
 
@@ -57,11 +57,9 @@ export default {
             trigger: 'blur'
           },
           {
-            min: 2,
-            max: 8,
             message: '错误的用户名',
             trigger: 'blur',
-            regexp: '/^[a-zA-Z0-9]{2,8}$/'
+            pattern: /^[a-zA-Z][a-zA-Z0-9_]{3,15}$/
           }
         ],
         password: [
@@ -71,9 +69,9 @@ export default {
             trigger: 'blur'
           },
           {
-            message: '密码由6-12位组成',
+            message: '密码由字母开头6-15位组成',
             trigger: 'blur',
-            regexp: '/^[0-9A-Za-z]$/'
+            pattern: /^[A-Za-z][\w.]{5,17}$/
           }
         ]
       }
@@ -82,13 +80,49 @@ export default {
   methods: {
     login() {
       if (this.loginInfo.isKeep) {
-        this.$store.dispatch('login/yLogin', this.loginInfo)
+        this.$store
+          .dispatch('login/yLogin', this.loginInfo)
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: `${this.$store.getters.getNickname},欢迎回来!`
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'error',
+              message: `登录失败,请检查账号密码是否正确。`
+            })
+          })
+        this.loginInfo = { ...this.loginInfo, islogin: true }
         setLocal('loginInfo', this.loginInfo)
       } else {
-        this.$store.dispatch('login/yLogin', this.loginInfo)
-        this.loginInfo = { ...this.loginInfo, password: '' }
+        this.$store
+          .dispatch('login/yLogin', this.loginInfo)
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: `${this.$store.getters.getNickname},欢迎回来!`
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'error',
+              message: `登录失败,请检查账号密码是否正确。`
+            })
+          })
+        this.loginInfo = { ...this.loginInfo, password: '', islogin: true }
         setLocal('loginInfo', this.loginInfo)
       }
+    },
+    onSubmit() {
+      this.$refs['loginInfo'].validate((valid) => {
+        if (valid) {
+          this.login()
+        } else {
+          return false
+        }
+      })
     },
     loginOk() {
       this.$notify({

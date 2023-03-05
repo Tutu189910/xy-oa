@@ -10,15 +10,28 @@
         :model="info"
         :rules="rules"
         status-icon
+        ref="changePsd"
       >
-        <el-form-item label="旧密码" prop="oldPass">
-          <el-input type="password" v-model.trim="info.oldPass"></el-input>
+        <el-form-item label="旧密码" prop="oldPsd">
+          <el-input
+            type="password"
+            show-password
+            v-model.trim="info.oldPsd"
+          ></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="pass">
-          <el-input type="password" v-model.trim="info.pass"></el-input>
+          <el-input
+            type="password"
+            show-password
+            v-model.trim="info.pass"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="checkPass">
-          <el-input type="password" v-model.trim="info.checkPass"></el-input>
+        <el-form-item label="确认密码" prop="newPsd">
+          <el-input
+            type="password"
+            show-password
+            v-model.trim="info.newPsd"
+          ></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="small" @click="onSubmit"
@@ -31,46 +44,78 @@
 </template>
 
 <script>
+import { updateUserPsd } from '@/server/main/setting'
 export default {
   data() {
     return {
       info: {
-        oldPass: '',
+        oldPsd: '',
         pass: '',
-        checkPass: ''
+        newPsd: ''
       },
       rules: {
-        oldPass: [
+        oldPsd: [
           { message: '请输入密码', trigger: 'blur', required: true },
           {
-            message: '密码由6-12位组成',
+            message: '密码由6-16位组成',
             trigger: 'blur',
-            regexp: '/^[0-9A-Za-z]$/'
+            pattern: /^[A-Za-z][\w.]{5,17}$/
           }
         ],
         pass: [
-          { message: '请输入密码', trigger: 'blur', required: true },
-          {
-            message: '密码由6-12位组成',
-            trigger: 'blur',
-            regexp: '/^[0-9A-Za-z]$/'
-          }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
         ],
-        checkPass: [
-          { message: '请再次输入密码', trigger: 'blur', required: true },
+        newPsd: [
+          { required: true, message: '请再次输入密码', trigger: 'blur' },
           {
-            message: '密码由6-12位组成',
-            trigger: 'blur',
-            regexp: '/^[0-9A-Za-z]$/'
+            validator: (rule, value, callback) => {
+              if (value !== this.info.pass) {
+                callback(new Error('两次输入的密码不一致'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
           }
         ]
       }
     }
   },
   methods: {
+    async submit() {
+      let list = await updateUserPsd({
+        ...this.info,
+        id: this.$store.getters.getUserInfo.id
+      })
+      console.log(list)
+      if (list.status) {
+        this.$notify({
+          title: '提示',
+          type: 'error',
+          message: list.msg
+        })
+      } else {
+        this.$notify({
+          title: '提示',
+          type: 'success',
+          message: list.msg
+        })
+      }
+      this.$store.dispatch('login/setupStore')
+    },
     onSubmit() {
-      console.log('a')
+      this.$refs['changePsd'].validate((valid) => {
+        if (valid) {
+          this.submit()
+        } else {
+          return false
+        }
+      })
     }
+  },
+  created() {
+    console.log(this.$store.getters.getUserInfo.id)
   }
 }
 </script>

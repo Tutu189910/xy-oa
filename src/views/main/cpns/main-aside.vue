@@ -1,6 +1,6 @@
 <template>
   <div class="main-aside">
-    <div class="logo">
+    <div class="logo" @click="$router.push('/')">
       <img src="~@/assets/logo.png" alt="" />
       <span v-if="!isCollapse">洗衣管理系统</span>
     </div>
@@ -15,8 +15,8 @@
       :collapse="isCollapse"
     >
       <div v-for="item in menu" :key="item.title">
-        <template v-if="item.children"
-          ><el-submenu :index="item.id">
+        <template v-if="item.children">
+          <el-submenu :index="item.id">
             <template slot="title">
               <i :class="item.icon"></i>
               <span v-show="!isCollapse">{{ item.title }}</span>
@@ -25,14 +25,17 @@
               :index="page.id"
               v-for="page in item.children"
               :key="page.title"
-              @click="handleItemClick(page)"
+              @click="handleItemClick(page.id, page)"
             >
               {{ page.title }}
             </el-menu-item>
           </el-submenu>
         </template>
         <template v-else-if="!item.children">
-          <el-menu-item :index="item.id" @click="handleItemClick(item)">
+          <el-menu-item
+            :index="item.id"
+            @click="handleItemClick(item.id, item)"
+          >
             <i :class="item.icon"></i>
             <span slot="title">{{ item.title }}</span>
           </el-menu-item>
@@ -54,28 +57,39 @@ export default {
   },
   data() {
     return {
-      menu: this.$store.state.login.uesrMenu
+      menu: this.$store.getters.getUserMuenu,
+      currentItme: ''
     }
   },
-  computed: {
-    currentItme() {
-      const { itemId } = isPath(
-        this.$store.state.login.uesrMenu,
-        this.$route.path.split('/').slice(0, 3).join('/')
-      )
-      return itemId
+  computed: {},
+  watch: {
+    '$store.state.login.userMenu': {
+      function() {
+        this.menu = this.$store.getters.getUserMenu
+      },
+      deep: true
+    },
+    '$route.path'() {
+      console.log(this.$route.path, this.menu,isPath(this.menu, this.$route.path))
+      this.currentItme = isPath(this.menu, this.$route.path).itemId
     }
   },
   methods: {
     handleOpen() {},
     handleClose() {},
-    handleItemClick(item) {
+    handleItemClick(current, item) {
+      // this.currentItme = current
       if (item.path !== this.$route.path) {
         this.$router.push(item.path ?? '/not-found')
       }
     }
   },
-  mounted() {}
+  created() {
+    this.$store.dispatch('login/setupStore').then(() => {
+      this.menu = this.$store.getters.getUserMenu
+      this.currentItme = isPath(this.menu, this.$route.path).itemId
+    })
+  }
 }
 </script>
 

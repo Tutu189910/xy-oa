@@ -6,19 +6,23 @@ const apiURL = {
   add: '/vip/add',
   query: '/vip/query',
   delete: '/vip/delete',
+  getRigths: '/vip/getRigths',
+  setRigths: '/vip/setRigths',
+  addRigths: '/vip/addRigths'
 }
 
 function queryVipUser(data) {
   return yAxios.post({
     url: apiURL.query,
     data: data,
+    isLoading: true
   })
 }
 
 function getVipUserInfo() {
   return yAxios.get({
     url: apiURL.getInfo,
-    isLoading: false
+    isLoading: true
   })
 }
 function deleteVipUser(data) {
@@ -40,5 +44,19 @@ function addVipUser(data) {
     data: data,
   })
 }
+function getRigths(data, isLoading = true) {
+  return yAxios.post({
+    url: apiURL.getRigths,
+    data: data,
+    isLoading
+  })
+}
+function setRigths(data, isLoading = true) {
+  return yAxios.post({
+    url: apiURL.setRigths,
+    data: data,
+    isLoading
+  })
+}
 
-export { queryVipUser, getVipUserInfo, deleteVipUser, updateVipUser, addVipUser }
+export { queryVipUser, getVipUserInfo, deleteVipUser, updateVipUser, addVipUser, getRigths, setRigths }

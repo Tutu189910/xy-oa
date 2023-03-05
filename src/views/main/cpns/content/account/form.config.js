@@ -1,5 +1,5 @@
 export default {
-  title: '员工管理',
+  title: '账号管理',
   propList: [
     {
       field: 'nickname',
@@ -10,8 +10,14 @@ export default {
     {
       field: 'username',
       type: 'input',
-      label: '账号:',
-      span: { sm: 24, md: 12, lg: 6, xl: 5 }
+      label: '账号名:',
+      span: { sm: 24, md: 12, lg: 4, xl: 5 }
+    },
+    {
+      field: 'phone',
+      type: 'input',
+      label: '电话:',
+      span: { sm: 24, md: 14, lg: 5, xl: 6 }
     }
     // {
     //   field: 'gender',

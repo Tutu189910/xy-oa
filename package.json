@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "node deploy",
+    "dep": "npm run build && npm run deploy"
   },
   "dependencies": {
     "animate.css": "^4.1.1",
@@ -15,6 +17,7 @@
     "echarts": "^5.4.0",
     "element-ui": "^2.15.10",
     "prettier": "^2.7.1",
+    "scp2": "^0.5.0",
     "vue": "^2.6.14",
     "vue-particles": "^1.0.9",
     "vue-router": "^3.0.0",

@@ -27,6 +27,7 @@
 
 <script>
 import loginMain from './cpns/login-main.vue'
+
 export default {
   components: { loginMain }
 }

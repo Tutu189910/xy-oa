@@ -1,31 +1,61 @@
+//首页
 import technical from '@/views/main/cpns/content/index/technical.vue'
-const data = () => import('@/views/main/cpns/content/index/data.vue')
-const account = () => import('@/views/main/cpns/content/account/account.vue')
-const orderFrom = () => import('@/views/main/cpns/content/orderForm/orderForm.vue')
-const vipFrom = () => import('@/views/main/cpns/content/vipForm/vipForm.vue')
+import data from '@/views/main/cpns/content/index/data.vue'
+// 订单
+import orderFrom from '@/views/main/cpns/content/orderForm/orderForm.vue'
+// 会员
+import info from '@/views/main/cpns/content/vipForm/info/info.vue'
+import rights from '@/views/main/cpns/content/vipForm/rights/rights.vue'
+//账号
+import account from '@/views/main/cpns/content/account/account.vue'
+// 通知
+import allinform from '@/views/main/cpns/content/inform/allInform/allInform.vue'
+import publish from '@/views/main/cpns/content/inform/publish/publish.vue'
+// 设置
 import setting from '@/views/main/cpns/content/setting/setting.vue'
 
 const root = [
+  //首页
   {
-    path: 'index/rechinical',
+    path: 'index/technical',
+    name: 'technical',
     component: technical
   },
   {
     path: 'index/data',
+    name: 'index/data',
     component: data
   },
-  {
-    path: 'account',
-    component: account
-  },
+  // 订单
   {
     path: 'orderFrom',
     component: orderFrom
   },
+  // 会员
   {
-    path: 'vipFrom',
-    component: vipFrom
+    path: 'vipFrom/info',
+    component: info
   },
+  {
+    path: 'vipFrom/rights',
+    component: rights
+  },
+  //账号
+  {
+    path: 'account',
+    name: 'account',
+    component: account
+  },
+  // 通知
+  {
+    path: 'inform/allinform',
+    component: allinform
+  },
+  {
+    path: 'inform/publish',
+    component: publish
+  },
+  // 设置
   {
     path: 'setting',
     component: setting
@@ -33,7 +63,7 @@ const root = [
 ]
 const storeManager = [
   {
-    path: 'index/rechinical',
+    path: 'index/technical',
     component: technical
   },
   {
@@ -45,12 +75,12 @@ const storeManager = [
     component: account
   },
   {
-    path: 'orderFrom',
-    component: orderFrom
+    path: 'orderFrom/info',
+    component: info
   },
   {
-    path: 'vipFrom',
-    component: vipFrom
+    path: 'orderFrom/rights',
+    component: rights
   },
   {
     path: 'setting',
@@ -59,7 +89,7 @@ const storeManager = [
 ]
 const employee = [
   {
-    path: 'index/rechinical',
+    path: 'index/technical',
     component: technical
   },
   {
@@ -67,12 +97,12 @@ const employee = [
     component: data
   },
   {
-    path: 'orderFrom',
-    component: orderFrom
+    path: 'orderFrom/info',
+    component: info
   },
   {
-    path: 'vipFrom',
-    component: vipFrom
+    path: 'orderFrom/rights',
+    component: rights
   },
   {
     path: 'setting',
@@ -80,13 +110,13 @@ const employee = [
   }
 ]
 
-export function getRouters(level) {
+export function getRouteMap(level) {
   switch (level) {
-    case 0:
+    case '0':
       return root;
-    case 1:
+    case '1':
       return storeManager;
-    case 2:
+    case '2':
       return employee;
   }
 }
