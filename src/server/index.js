@@ -6,6 +6,9 @@ const yAxios = new yRequire(
   {
     baseURL: BASE_URL,
     timeout: BASE_OUTTIME,
+    headers: {
+      'Host': '140.210.193.35:3001',
+    },
     interceptors: {
       requestInterceptors(config) {
         console.log('实例拦截');

@@ -20,10 +20,6 @@ export default {
       const list = await getOrderInfo()
       commit('changeOrderDate', list.data)
     },
-    async setupStore({ commit }) {
-      const list = await getOrderInfo()
-      commit('changeOrderDate', list.data)
-    },
     async queryOrder({ commit }, payload) {
       const queryData = {}
       Object.keys(payload).forEach(e => {
@@ -53,6 +49,9 @@ export default {
       console.log(payload, list);
       dispatch('setupStore')
       if (list.status) throw new Error('失败')
+    },
+    setupStore({ dispatch }) {
+      dispatch('getOrderList')
     }
   }
 }

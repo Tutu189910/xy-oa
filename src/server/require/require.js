@@ -13,6 +13,9 @@ class yRequire {
 
     this.instance.interceptors.request.use(
       (config) => {
+        if (this.loading) {
+          return config
+        }
         if (this.isLoading) {
           this.loading = Loading.service({
             lock: true,

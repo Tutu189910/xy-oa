@@ -4,8 +4,8 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '^/api': {
-        // target: 'http://140.210.193.35:3000',
-        target: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:3000' : 'http://140.210.193.35:3000',
+        target: 'https://140.210.193.35:3001',
+        // target: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:3000' : 'https://140.210.193.35:3001',
         pathRewrite: {
           '^/api': ''
         },

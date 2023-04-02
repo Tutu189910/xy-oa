@@ -55,7 +55,17 @@ export default {
         this.$store.getters['inform/getNowInform'].result.slice(0, 5) ?? []
     }
   },
-  watch: {},
+  watch: {
+    'store.state.inform.nowInform': {
+      function() {
+        this.inform = this.$store.getters['inform/getNowInform'].result.slice(
+          0,
+          5
+        )
+      },
+      deep: true
+    }
+  },
   methods: {
     getTimeOfDay() {
       let now = new Date()

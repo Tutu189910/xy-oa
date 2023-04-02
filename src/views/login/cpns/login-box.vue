@@ -1,6 +1,6 @@
 <template>
   <div class="login-box">
-    <h2>洗衣后台系统</h2>
+    <h2>洗衣管理系统</h2>
     <el-form
       :model="loginInfo"
       status-icon
@@ -39,6 +39,7 @@
 
 <script>
 import { getLocal, setLocal } from '@/tool/localTool'
+import _ from 'lodash'
 
 export default {
   props: {},
@@ -145,6 +146,7 @@ export default {
     if (getLocal('loginInfo')) {
       this.loginInfo = getLocal('loginInfo')
     }
+    console.log(_.throttle)
   }
 }
 </script>

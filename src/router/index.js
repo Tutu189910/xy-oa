@@ -1,4 +1,4 @@
-import store, { setupStore } from '@/store'
+import store from '@/store'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -81,7 +81,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.path);
   if (to.path !== '/login' && !window.localStorage.getItem('token')) {
     next({ name: 'login' })
   } else {
@@ -94,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
         next({ ...to, replace: true })
       }
     }
-    if (!store.getters['userInfo']) setupStore()
+    // if (!store.getters['userInfo']) setupStore()
     next()
   }
 })

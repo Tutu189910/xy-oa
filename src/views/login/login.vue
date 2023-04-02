@@ -29,7 +29,15 @@
 import loginMain from './cpns/login-main.vue'
 
 export default {
-  components: { loginMain }
+  components: { loginMain },
+  created() {
+    this.$notify({
+      title: '测试账号',
+      message: `账号名：root
+      密码：xy123123`,
+      position: 'bottom-left'
+    })
+  }
 }
 </script>
 

@@ -6,7 +6,6 @@ import store from './store'
 import '@/assets/css/index.less'
 import 'animate.css'
 
-
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueParticles from 'vue-particles'

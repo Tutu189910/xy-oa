@@ -3,8 +3,8 @@ const BASE_OUTTIME = 8000
 if (process.env.NODE_ENV === 'development') {
   BASE_URL = '/api'
 } else if (process.env.NODE_ENV === 'production') {
-  BASE_URL = 'http://140.210.193.35:3000'
+  BASE_URL = 'https://140.210.193.35:3001'
 } else if (process.env.NODE_ENV === 'test') {
-  BASE_URL = 'http://127.0.0.1:8080'
+  BASE_URL = '/api'
 }
 export { BASE_URL, BASE_OUTTIME }

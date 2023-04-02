@@ -18,11 +18,6 @@ export default {
   actions: {
     async getvipUserList({ commit }) {
       const list = await getVipUserInfo()
-      console.log(list);
-      commit('changeVipDate', list.data)
-    },
-    async setupStore({ commit }) {
-      const list = await getVipUserInfo()
       commit('changeVipDate', list.data)
     },
     async queryVipUser({ commit }, payload) {
@@ -34,26 +29,25 @@ export default {
       if (list.status) {
         commit('changeVipDate', { result: '', length: 0 })
       }
-      console.log(queryData, list);
       commit('changeVipDate', { result: list.data, length: list.data.length })
     },
     async deleteVipUser({ dispatch }, payload) {
       const list = await deleteVipUser({ ...payload, clothes_outTime: Date.now })
-      console.log(payload, list);
       dispatch('getvipUserList')
       if (list.status) throw new Error('失败')
     },
     async updateVipUser({ dispatch }, payload) {
       const list = await updateVipUser(payload)
-      console.log(payload, list);
       dispatch('setupStore')
       if (list.status) throw new Error('失败')
     },
     async addVipUser({ dispatch }, payload) {
       const list = await addVipUser(payload)
-      console.log(payload, list);
       dispatch('setupStore')
       if (list.status) throw new Error('失败')
-    }
+    },
+    setupStore({ dispatch }) {
+      dispatch('getvipUserList')
+    },
   }
 }
